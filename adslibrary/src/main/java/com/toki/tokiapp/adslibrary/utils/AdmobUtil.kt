@@ -135,9 +135,8 @@ object AdmobUtil {
                             }
                         }
                     }
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        showInterstitialAdNew(activity, interstitialAd, adsInterCallBack)
-                    }, 400)
+                    showInterstitialAdNew(activity, interstitialAd, adsInterCallBack)
+
                 }
 
                 override fun onAdFailedToLoad(loadAdError: LoadAdError) {
@@ -300,9 +299,8 @@ object AdmobUtil {
                         }
                     }
 
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        showInterstitialAdNew(activity, it, adsInterCallBack)
-                    }, 400)
+                    showInterstitialAdNew(activity, it, adsInterCallBack)
+
                 }
             }
             return
@@ -343,9 +341,8 @@ object AdmobUtil {
                 }
 
             }
-            Handler(Looper.getMainLooper()).postDelayed({
-                showInterstitialAdNew(activity, interHolder.inter, adsInterCallBack)
-            }, 400)
+            showInterstitialAdNew(activity, interHolder.inter, adsInterCallBack)
+
         } else {
             isAdShowing = false
             adsInterCallBack.onAdFail("inter null")
@@ -359,11 +356,9 @@ object AdmobUtil {
     private fun showInterstitialAdNew(activity: Activity, mInterstitialAd: InterstitialAd?, callback: AdsInterCallBack) {
         if (ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && mInterstitialAd != null) {
             isAdShowing = true
-            Handler(Looper.getMainLooper()).postDelayed({
-                callback.onStartAction()
-                mInterstitialAd.setOnPaidEventListener(callback::onPaid)
-                mInterstitialAd.show(activity)
-            }, 400)
+            callback.onStartAction()
+            mInterstitialAd.setOnPaidEventListener(callback::onPaid)
+            mInterstitialAd.show(activity)
         } else {
             isAdShowing = false
             dismissAdDialog()
