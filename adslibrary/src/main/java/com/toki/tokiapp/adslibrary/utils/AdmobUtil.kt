@@ -127,12 +127,13 @@ object AdmobUtil {
                         override fun onAdShowedFullScreenContent() {
                             super.onAdShowedFullScreenContent()
                             isAdShowing = true
-                            dismissAdDialog()
                             adsInterCallBack.onAdShowed()
                             try {
                                 interstitialAd.setOnPaidEventListener(adsInterCallBack::onPaid)
                             } catch (e: Exception) {
                             }
+                            dismissAdDialog()
+
                         }
                     }
                     showInterstitialAdNew(activity, interstitialAd, adsInterCallBack)
@@ -290,12 +291,13 @@ object AdmobUtil {
                             super.onAdShowedFullScreenContent()
                             handler.removeCallbacksAndMessages(null)
                             isAdShowing = true
-                            dismissAdDialog()
                             adsInterCallBack.onAdShowed()
                             try {
                                 interHolder.inter?.setOnPaidEventListener(adsInterCallBack::onPaid)
                             } catch (e: Exception) {
                             }
+                            dismissAdDialog()
+
                         }
                     }
 
@@ -332,12 +334,13 @@ object AdmobUtil {
                     super.onAdShowedFullScreenContent()
                     handler.removeCallbacksAndMessages(null)
                     isAdShowing = true
-                    dismissAdDialog()
                     adsInterCallBack.onAdShowed()
                     try {
                         interHolder.inter?.setOnPaidEventListener(adsInterCallBack::onPaid)
                     } catch (e: Exception) {
                     }
+                    dismissAdDialog()
+
                 }
 
             }
