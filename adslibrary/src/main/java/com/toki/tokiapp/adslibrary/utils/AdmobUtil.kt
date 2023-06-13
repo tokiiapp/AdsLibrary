@@ -358,10 +358,13 @@ object AdmobUtil {
 
     private fun showInterstitialAdNew(activity: Activity, mInterstitialAd: InterstitialAd?, callback: AdsInterCallBack) {
         if (ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) && mInterstitialAd != null) {
-            isAdShowing = true
-            callback.onStartAction()
-            mInterstitialAd.setOnPaidEventListener(callback::onPaid)
-            mInterstitialAd.show(activity)
+            Handler(Looper.getMainLooper()).postDelayed({
+                isAdShowing = true
+                callback.onStartAction()
+                mInterstitialAd.setOnPaidEventListener(callback::onPaid)
+                mInterstitialAd.show(activity)
+            },400)
+
         } else {
             isAdShowing = false
             dismissAdDialog()
