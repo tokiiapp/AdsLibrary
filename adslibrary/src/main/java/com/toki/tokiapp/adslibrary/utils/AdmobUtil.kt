@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
@@ -18,6 +19,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.facebook.shimmer.ShimmerFrameLayout
+import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
@@ -31,6 +33,7 @@ import com.toki.tokiapp.adslibrary.ads.callback.NativeAdCallback
 import com.toki.tokiapp.adslibrary.ads.enumads.GoogleENative
 import com.toki.tokiapp.adslibrary.ads.model.InterHolderMulti
 import com.toki.tokiapp.adslibrary.ads.model.InterHolderSimple
+import com.vapp.admoblibrary.ads.admobnative.enumclass.CollapsibleBanner
 import com.vapp.admoblibrary.ads.model.NativeHolder
 
 object AdmobUtil {
@@ -532,6 +535,69 @@ object AdmobUtil {
             mAdView.loadAd(adRequest!!)
         }
     }
+
+
+    fun loadAdBannerCollapsible(activity: Activity, bannerId: String?, collapsibleBannersize: CollapsibleBanner, viewGroup: ViewGroup, callback: BannerCallBack) {
+        var bannerId = bannerId
+        if (!isShowAds || !isNetworkConnected(activity)) {
+            viewGroup.visibility = View.GONE
+            return
+        }
+        val mAdView = AdView(activity)
+        if (isTesting) {
+            bannerId = activity.getString(R.string.test_ads_admob_banner_id)
+        }
+        mAdView.adUnitId = bannerId.toString()
+        val adSize = getAdSize(activity)
+        mAdView.setAdSize(adSize)
+        viewGroup.removeAllViews()
+        val tagView = activity.layoutInflater.inflate(R.layout.layoutbanner_loading, null, false)
+        viewGroup.addView(tagView, 0)
+        viewGroup.addView(mAdView, 1)
+        shimmerFrameLayout = tagView.findViewById(R.id.shimmer_view_container)
+        shimmerFrameLayout?.startShimmer()
+        mAdView.onPaidEventListener = OnPaidEventListener { adValue -> callback.onPaid(adValue, mAdView) }
+        mAdView.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                shimmerFrameLayout?.stopShimmer()
+                viewGroup.removeView(tagView)
+                callback.onLoad()
+            }
+
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                Log.e(" Admod", "failloadbanner" + adError.message)
+                shimmerFrameLayout?.stopShimmer()
+                viewGroup.removeView(tagView)
+                callback.onFailed()
+            }
+
+            override fun onAdOpened() {}
+            override fun onAdClicked() {
+                // Code to be executed when the user clicks on an ad.
+            }
+
+            override fun onAdClosed() {
+                // Code to be executed when the user is about to return
+                // to the app after tapping on an ad.
+                callback.onClosed(adSize)
+            }
+        }
+        val extras = Bundle()
+        var anchored = "top"
+        anchored = if (collapsibleBannersize === CollapsibleBanner.TOP) {
+            "top"
+        } else {
+            "bottom"
+        }
+        extras.putString("collapsible", anchored)
+        val adRequest2 = AdRequest.Builder().addNetworkExtrasBundle(AdMobAdapter::class.java, extras)
+            .build()
+        if (adRequest2 != null) {
+            mAdView.loadAd(adRequest2)
+        }
+        Log.e(" Admod", "loadAdBanner")
+    }
+
 
     private fun getAdSize(context: Activity): AdSize {
         // Step 2 - Determine the screen width (less decorations) to use for the ad width.
