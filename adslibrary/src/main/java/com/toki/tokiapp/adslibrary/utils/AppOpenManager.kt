@@ -202,7 +202,9 @@ class AppOpenManager : Application.ActivityLifecycleCallbacks, LifecycleObserver
         if (!Companion.isShowingAd && isAdAvailable(isSplash)) {
             val callback: FullScreenContentCallback = object : FullScreenContentCallback() {
                 override fun onAdDismissedFullScreenContent() {
-                    dialogFullScreen!!.dismiss()
+                    if(currentActivity != null && currentActivity?.isFinishing == false){
+                        dialogFullScreen?.dismiss()
+                    }
                     // Set the reference to null so isAdAvailable() returns false.
                     appResumeAd = null
                     if (fullScreenContentCallback != null) {
@@ -213,7 +215,9 @@ class AppOpenManager : Application.ActivityLifecycleCallbacks, LifecycleObserver
                 }
 
                 override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                    dialogFullScreen!!.dismiss()
+                    if(currentActivity != null && currentActivity?.isFinishing == false){
+                        dialogFullScreen?.dismiss()
+                    }
                     if (fullScreenContentCallback != null) {
                         fullScreenContentCallback?.onAdFailedToShowFullScreenContent(adError)
                     }
