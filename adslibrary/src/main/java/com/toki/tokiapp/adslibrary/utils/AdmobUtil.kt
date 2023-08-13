@@ -21,12 +21,14 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.*
+import com.google.android.gms.ads.appopen.AppOpenAd
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.google.android.gms.ads.nativead.NativeAdView
 import com.toki.tokiapp.adslibrary.R
 import com.toki.tokiapp.adslibrary.ads.callback.AdsInterCallBack
+import com.toki.tokiapp.adslibrary.ads.callback.AppOpenSplashCallback
 import com.toki.tokiapp.adslibrary.ads.callback.BannerCallBack
 import com.toki.tokiapp.adslibrary.ads.callback.LoadInterCallBack
 import com.toki.tokiapp.adslibrary.ads.callback.NativeAdCallback
@@ -366,7 +368,7 @@ object AdmobUtil {
                 callback.onStartAction()
                 mInterstitialAd.setOnPaidEventListener(callback::onPaid)
                 mInterstitialAd.show(activity)
-            },400)
+            }, 400)
 
         } else {
             isAdShowing = false
@@ -450,7 +452,7 @@ object AdmobUtil {
                 nativeHolder.native_mutable.removeObservers((activity as LifecycleOwner))
                 nativeAdCallback.onAdFail()
             }
-        }else{
+        } else {
             val tagView: View = if (size === GoogleENative.UNIFIED_MEDIUM) {
                 activity.layoutInflater.inflate(R.layout.layoutnative_loading_medium, null, false)
             } else {
@@ -482,7 +484,7 @@ object AdmobUtil {
         }
     }
 
-    fun loadBannerAd(activity: Activity,bannerId: String, viewGroup: ViewGroup, bannerCallBack: BannerCallBack){
+    fun loadBannerAd(activity: Activity, bannerId: String, viewGroup: ViewGroup, bannerCallBack: BannerCallBack) {
         if (!isShowAds || !isNetworkConnected(activity)) {
             viewGroup.visibility = View.GONE
             bannerCallBack.onFailed()
@@ -537,17 +539,17 @@ object AdmobUtil {
     }
 
 
-    fun loadAdBannerCollapsible(activity: Activity, bannerId: String?, collapsibleBannersize: CollapsibleBanner, viewGroup: ViewGroup, callback: BannerCallBack) {
-        var bannerId = bannerId
+    fun loadAdBannerCollapsible(activity: Activity, bannerId: String, collapsibleBannersize: CollapsibleBanner, viewGroup: ViewGroup, callback: BannerCallBack) {
+        var bannerId1 = bannerId
         if (!isShowAds || !isNetworkConnected(activity)) {
             viewGroup.visibility = View.GONE
             return
         }
         val mAdView = AdView(activity)
         if (isTesting) {
-            bannerId = activity.getString(R.string.test_ads_admob_banner_id)
+            bannerId1 = activity.getString(R.string.test_ads_admob_banner_id)
         }
-        mAdView.adUnitId = bannerId.toString()
+        mAdView.adUnitId = bannerId1
         val adSize = getAdSize(activity)
         mAdView.setAdSize(adSize)
         viewGroup.removeAllViews()
@@ -598,6 +600,59 @@ object AdmobUtil {
         Log.e(" Admod", "loadAdBanner")
     }
 
+
+    fun loadAndShowAppOpenSplash(activity: Activity, appOpenId: String, appOpenSplashCallback: AppOpenSplashCallback) {
+        var appResumeAdId = ""
+        if (adRequest == null) {
+            initAdRequest(timeOut)
+        }
+        appResumeAdId = if (isTesting) {
+            activity.getString(R.string.test_ads_admob_app_open)
+        } else {
+            appOpenId
+        }
+        if (!isShowAds || !isNetworkConnected(activity)) {
+            appOpenSplashCallback.onAdFail("No internet")
+            return
+        }
+
+        adRequest?.let {
+            AppOpenAd.load(activity, appResumeAdId, it, object : AppOpenAd.AppOpenAdLoadCallback() {
+                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                    super.onAdFailedToLoad(loadAdError)
+                    appOpenSplashCallback.onAdFail(loadAdError.message)
+                }
+
+                override fun onAdLoaded(appOpenAd: AppOpenAd) {
+                    super.onAdLoaded(appOpenAd)
+                    appOpenAd.show(activity)
+                    appOpenAd.fullScreenContentCallback = object : FullScreenContentCallback() {
+                        override fun onAdClicked() {
+                            super.onAdClicked()
+                        }
+
+                        override fun onAdDismissedFullScreenContent() {
+                            super.onAdDismissedFullScreenContent()
+                            appOpenSplashCallback.onAdClosed()
+                        }
+
+                        override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                            super.onAdFailedToShowFullScreenContent(adError)
+                            appOpenSplashCallback.onAdFail(adError.message)
+                        }
+
+                        override fun onAdImpression() {
+                            super.onAdImpression()
+                        }
+
+                        override fun onAdShowedFullScreenContent() {
+                            super.onAdShowedFullScreenContent()
+                        }
+                    }
+                }
+            })
+        }
+    }
 
     private fun getAdSize(context: Activity): AdSize {
         // Step 2 - Determine the screen width (less decorations) to use for the ad width.

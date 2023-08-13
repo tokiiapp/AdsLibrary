@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.android.gms.ads.AdValue
 import com.toki.tokiapp.adslibrary.ads.callback.AdsInterCallBack
+import com.toki.tokiapp.adslibrary.ads.callback.AppOpenSplashCallback
 import com.toki.tokiapp.adslibrary.ads.callback.NativeAdCallback
 import com.toki.tokiapp.adslibrary.utils.AdmobUtil
 import com.toki.tokiapp.adslibrary.utils.AppOpenManager
@@ -18,30 +19,14 @@ class MainActivity : AppCompatActivity() {
         AppOpenManager.instance?.disableAppResumeWithActivity(MainActivity::class.java)
         AdsManager.loadInter(this, AdsManager.interholder)
         AdmobUtil.loadNativeAd(this,AdsManager.nativeHolder)
-        AdmobUtil.loadAndShowAdInterstitial(this, "ca-app-pub-3940256099942544/1033173712", object : AdsInterCallBack {
-            override fun onStartAction() {
-                startActivity(Intent(this@MainActivity, SecondActivity::class.java))
+        AdmobUtil.loadAndShowAppOpenSplash(this,"",object : AppOpenSplashCallback{
+            override fun onAdFail(error: String) {
+                onAdClosed()
             }
 
-            override fun onEventClickAdClosed() {
-
+            override fun onAdClosed() {
+               startActivity(Intent(this@MainActivity,SecondActivity::class.java))
             }
-
-            override fun onAdShowed() {
-
-            }
-
-            override fun onAdLoaded() {
-
-            }
-
-            override fun onAdFail(error: String?) {
-
-            }
-
-            override fun onPaid(adValue: AdValue?) {
-
-            }
-        }, false)
+        })
     }
 }

@@ -245,17 +245,20 @@ class AppOpenManager : Application.ActivityLifecycleCallbacks, LifecycleObserver
     private fun showAdsResume(isSplash: Boolean, callback: FullScreenContentCallback) {
         if (ProcessLifecycleOwner.get().getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
             Handler().postDelayed({
-                if (isSplash) {
-                    splashAd?.fullScreenContentCallback = callback
-                    if (currentActivity != null) showDialog(currentActivity)
-                    splashAd?.show(currentActivity!!)
-                } else {
-                    if (appResumeAd != null) {
-                        appResumeAd?.fullScreenContentCallback = callback
+                currentActivity?.let {
+                    if (isSplash) {
+                        splashAd?.fullScreenContentCallback = callback
                         if (currentActivity != null) showDialog(currentActivity)
-                        appResumeAd?.show(currentActivity!!)
+                        splashAd?.show(it)
+                    } else {
+                        if (appResumeAd != null) {
+                            appResumeAd?.fullScreenContentCallback = callback
+                            if (currentActivity != null) showDialog(currentActivity)
+                            appResumeAd?.show(it)
+                        }
                     }
                 }
+
             }, 100)
         }
     }

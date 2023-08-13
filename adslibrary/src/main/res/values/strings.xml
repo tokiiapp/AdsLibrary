@@ -19,5 +19,6 @@
     <string name="dialog_cancel">Cancel</string>
     <string name="LOADING">Loading...</string>
     <string name="error_getting_sku_model">Error getting sku model</string>
+    <string name="this_action_can_contain_ad">This action can contain ad</string>
 
 </resources>
