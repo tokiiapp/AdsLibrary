@@ -192,9 +192,9 @@ class AppOpenManager : Application.ActivityLifecycleCallbacks, LifecycleObserver
     }
 
     fun showAdIfAvailable(isSplash: Boolean) {
-        if (!ProcessLifecycleOwner.get().getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
-            if (fullScreenContentCallback != null) {
-                dialogFullScreen!!.dismiss()
+        if (!ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            if (fullScreenContentCallback != null && currentActivity != null && currentActivity?.isFinishing == false) {
+                dialogFullScreen?.dismiss()
                 fullScreenContentCallback?.onAdDismissedFullScreenContent()
             }
             return
