@@ -194,7 +194,11 @@ class AppOpenManager : Application.ActivityLifecycleCallbacks, LifecycleObserver
     fun showAdIfAvailable(isSplash: Boolean) {
         if (!ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
             if (fullScreenContentCallback != null && currentActivity != null && currentActivity?.isFinishing == false) {
-                dialogFullScreen?.dismiss()
+                dialogFullScreen?.let {
+                    if (it.isShowing){
+                        it.dismiss()
+                    }
+                }
                 fullScreenContentCallback?.onAdDismissedFullScreenContent()
             }
             return
@@ -203,7 +207,11 @@ class AppOpenManager : Application.ActivityLifecycleCallbacks, LifecycleObserver
             val callback: FullScreenContentCallback = object : FullScreenContentCallback() {
                 override fun onAdDismissedFullScreenContent() {
                     if(currentActivity != null && currentActivity?.isFinishing == false){
-                        dialogFullScreen?.dismiss()
+                        dialogFullScreen?.let {
+                            if (it.isShowing){
+                                it.dismiss()
+                            }
+                        }
                     }
                     // Set the reference to null so isAdAvailable() returns false.
                     appResumeAd = null
@@ -216,7 +224,11 @@ class AppOpenManager : Application.ActivityLifecycleCallbacks, LifecycleObserver
 
                 override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                     if(currentActivity != null && currentActivity?.isFinishing == false){
-                        dialogFullScreen?.dismiss()
+                        dialogFullScreen?.let {
+                            if (it.isShowing){
+                                it.dismiss()
+                            }
+                        }
                     }
                     if (fullScreenContentCallback != null) {
                         fullScreenContentCallback?.onAdFailedToShowFullScreenContent(adError)
