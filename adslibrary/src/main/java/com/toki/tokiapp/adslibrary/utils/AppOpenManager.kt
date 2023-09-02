@@ -193,20 +193,21 @@ class AppOpenManager : Application.ActivityLifecycleCallbacks, LifecycleObserver
 
     fun showAdIfAvailable(isSplash: Boolean) {
         if (!ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-            if (fullScreenContentCallback != null && currentActivity != null && currentActivity?.isFinishing == false) {
+            if (  currentActivity?.isDestroyed == false) {
                 dialogFullScreen?.let {
                     if (it.isShowing){
                         it.dismiss()
                     }
                 }
-                fullScreenContentCallback?.onAdDismissedFullScreenContent()
             }
+            fullScreenContentCallback?.onAdDismissedFullScreenContent()
+
             return
         }
         if (!Companion.isShowingAd && isAdAvailable(isSplash)) {
             val callback: FullScreenContentCallback = object : FullScreenContentCallback() {
                 override fun onAdDismissedFullScreenContent() {
-                    if(currentActivity != null && currentActivity?.isFinishing == false){
+                    if( currentActivity?.isDestroyed == false){
                         dialogFullScreen?.let {
                             if (it.isShowing){
                                 it.dismiss()
@@ -223,7 +224,7 @@ class AppOpenManager : Application.ActivityLifecycleCallbacks, LifecycleObserver
                 }
 
                 override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                    if(currentActivity != null && currentActivity?.isFinishing == false){
+                    if( currentActivity?.isDestroyed == false){
                         dialogFullScreen?.let {
                             if (it.isShowing){
                                 it.dismiss()
