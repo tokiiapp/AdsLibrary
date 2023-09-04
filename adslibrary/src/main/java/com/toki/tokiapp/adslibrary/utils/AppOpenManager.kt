@@ -143,7 +143,7 @@ class AppOpenManager : Application.ActivityLifecycleCallbacks, LifecycleObserver
                 val a = "fail"
             }
         }
-        if(myApplication != null && appResumeAdId  != null && adRequest != null && loadCallback != null){
+        if (myApplication != null && appResumeAdId != null && adRequest != null && loadCallback != null) {
 
             AppOpenAd.load(
                 myApplication!!, appResumeAdId!!, adRequest!!,
@@ -188,17 +188,30 @@ class AppOpenManager : Application.ActivityLifecycleCallbacks, LifecycleObserver
     override fun onActivityPaused(activity: Activity) {}
     override fun onActivitySaveInstanceState(activity: Activity, bundle: Bundle) {}
     override fun onActivityDestroyed(activity: Activity) {
+        try {
+            if (currentActivity?.isDestroyed == false) {
+                dialogFullScreen?.let {
+                    if (it.isShowing) {
+                        it.dismiss()
+                    }
+                }
+            }
+        } catch (_: Exception) {
+        }
         currentActivity = null
     }
 
     fun showAdIfAvailable(isSplash: Boolean) {
         if (!ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-            if (  currentActivity?.isDestroyed == false) {
-                dialogFullScreen?.let {
-                    if (it.isShowing){
-                        it.dismiss()
+            try {
+                if (currentActivity?.isDestroyed == false) {
+                    dialogFullScreen?.let {
+                        if (it.isShowing) {
+                            it.dismiss()
+                        }
                     }
                 }
+            } catch (_: Exception) {
             }
             fullScreenContentCallback?.onAdDismissedFullScreenContent()
 
@@ -207,12 +220,15 @@ class AppOpenManager : Application.ActivityLifecycleCallbacks, LifecycleObserver
         if (!Companion.isShowingAd && isAdAvailable(isSplash)) {
             val callback: FullScreenContentCallback = object : FullScreenContentCallback() {
                 override fun onAdDismissedFullScreenContent() {
-                    if( currentActivity?.isDestroyed == false){
-                        dialogFullScreen?.let {
-                            if (it.isShowing){
-                                it.dismiss()
+                    try {
+                        if (currentActivity?.isDestroyed == false) {
+                            dialogFullScreen?.let {
+                                if (it.isShowing) {
+                                    it.dismiss()
+                                }
                             }
                         }
+                    } catch (_: Exception) {
                     }
                     // Set the reference to null so isAdAvailable() returns false.
                     appResumeAd = null
@@ -224,12 +240,15 @@ class AppOpenManager : Application.ActivityLifecycleCallbacks, LifecycleObserver
                 }
 
                 override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                    if( currentActivity?.isDestroyed == false){
-                        dialogFullScreen?.let {
-                            if (it.isShowing){
-                                it.dismiss()
+                    try {
+                        if (currentActivity?.isDestroyed == false) {
+                            dialogFullScreen?.let {
+                                if (it.isShowing) {
+                                    it.dismiss()
+                                }
                             }
                         }
+                    } catch (_: Exception) {
                     }
                     if (fullScreenContentCallback != null) {
                         fullScreenContentCallback?.onAdFailedToShowFullScreenContent(adError)
@@ -279,7 +298,7 @@ class AppOpenManager : Application.ActivityLifecycleCallbacks, LifecycleObserver
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onResume() {
 
-        if ( currentActivity == null) {
+        if (currentActivity == null) {
             return
         }
         if (AdmobUtil.isAdShowing) {
