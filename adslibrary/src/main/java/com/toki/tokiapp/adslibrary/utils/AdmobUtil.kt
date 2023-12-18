@@ -241,6 +241,7 @@ object AdmobUtil {
 
                 override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                     super.onAdFailedToLoad(loadAdError)
+                    loadInterCallBack.onAdFail(loadAdError.message)
                     isAdShowing = false
                     interHolder.mutableLiveData.value = null
                     interHolder.isLoaded = true
