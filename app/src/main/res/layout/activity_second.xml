@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".SecondActivity">
+    tools:context="com.toki.tokiapp.test.SecondActivity">
 
 
     <FrameLayout

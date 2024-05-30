@@ -36,7 +36,7 @@ import com.toki.tokiapp.adslibrary.ads.enumads.GoogleENative
 import com.toki.tokiapp.adslibrary.ads.model.InterHolderMulti
 import com.toki.tokiapp.adslibrary.ads.model.InterHolderSimple
 import com.vapp.admoblibrary.ads.admobnative.enumclass.CollapsibleBanner
-import com.vapp.admoblibrary.ads.model.NativeHolder
+import com.toki.tokiapp.adslibrary.ads.model.NativeHolder
 
 object AdmobUtil {
     //Ẩn hiện quảng cáo
@@ -84,7 +84,7 @@ object AdmobUtil {
             .build()
     }
 
-    //check open network
+    //check open networklo
     fun isNetworkConnected(context: Context): Boolean {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         return cm.activeNetworkInfo != null && cm.activeNetworkInfo!!.isConnected
@@ -482,6 +482,44 @@ object AdmobUtil {
                     nativeHolder.native_mutable.removeObservers((activity as LifecycleOwner))
                 }
             }
+        }
+    }
+
+    fun loadAndShowNative(activity: Activity, nativeId: String, viewGroup: ViewGroup, layout: Int, size: GoogleENative, nativeAdCallback: NativeAdCallback){
+        if (!isShowAds || !isNetworkConnected(activity)) {
+            return
+        }
+        var idNative = nativeId
+        if (isTesting) {
+            idNative = activity.getString(R.string.test_ads_admob_native_id)
+        }
+        val tagView: View = if (size === GoogleENative.UNIFIED_MEDIUM) {
+            activity.layoutInflater.inflate(R.layout.layoutnative_loading_medium, null, false)
+        } else {
+            activity.layoutInflater.inflate(R.layout.layoutnative_loading_small, null, false)
+        }
+        viewGroup.addView(tagView, 0)
+        if (shimmerFrameLayout == null) shimmerFrameLayout = tagView.findViewById<ShimmerFrameLayout>(R.id.shimmer_view_container)
+        shimmerFrameLayout?.startShimmer()
+
+        val adLoader: AdLoader = AdLoader.Builder(activity, idNative).forNativeAd {
+            val adView = activity.layoutInflater
+                .inflate(layout, null) as NativeAdView
+
+            NativeAdPopulate.populateNativeAdView(it, adView, GoogleENative.UNIFIED_MEDIUM)
+            if (shimmerFrameLayout != null) {
+                shimmerFrameLayout!!.stopShimmer()
+            }
+            viewGroup.addView(adView)
+            nativeAdCallback.onNativeAdLoaded()
+            it.setOnPaidEventListener(nativeAdCallback::onAdPaid)
+        }.withAdListener(object : AdListener() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                super.onAdFailedToLoad(adError)
+            }
+        }).withNativeAdOptions(NativeAdOptions.Builder().build()).build()
+        if (adRequest != null) {
+            adLoader.loadAd(adRequest!!)
         }
     }
 

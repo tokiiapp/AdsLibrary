@@ -4,12 +4,13 @@ plugins {
 }
 
 android {
-    compileSdk 33
+    compileSdk 34
+    namespace 'com.toki.tokiapp.test'
 
     defaultConfig {
-        applicationId "com.toki.tokiapp.adslibrary"
+        applicationId "com.toki.tokiapp.test"
         minSdk 23
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -44,6 +45,6 @@ dependencies {
     implementation project(':adslibrary')
     implementation project(':ratingdialog')
 
-    implementation 'com.google.android.gms:play-services-ads:22.4.0'
+    implementation 'com.google.android.gms:play-services-ads:23.1.0'
 
 }

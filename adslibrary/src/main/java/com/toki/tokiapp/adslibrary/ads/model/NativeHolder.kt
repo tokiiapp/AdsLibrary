@@ -1,4 +1,4 @@
-package com.vapp.admoblibrary.ads.model
+package com.toki.tokiapp.adslibrary.ads.model
 
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.ads.nativead.NativeAd

@@ -1,4 +1,4 @@
-package com.toki.tokiapp.adslibrary
+package com.toki.tokiapp.test
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -18,14 +18,14 @@ class MainActivity : AppCompatActivity() {
         AppOpenManager.instance?.init(application,"ca-app-pub-3940256099942544/3419835294")
         AppOpenManager.instance?.disableAppResumeWithActivity(MainActivity::class.java)
         AdsManager.loadInter(this, AdsManager.interholder)
-        AdmobUtil.loadNativeAd(this,AdsManager.nativeHolder)
+        AdmobUtil.loadNativeAd(this, AdsManager.nativeHolder)
         AdmobUtil.loadAndShowAppOpenSplash(this,"",object : AppOpenSplashCallback{
             override fun onAdFail(error: String) {
                 onAdClosed()
             }
 
             override fun onAdClosed() {
-               startActivity(Intent(this@MainActivity,SecondActivity::class.java))
+               startActivity(Intent(this@MainActivity, SecondActivity::class.java))
             }
         })
     }

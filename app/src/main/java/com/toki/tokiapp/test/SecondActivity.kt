@@ -1,4 +1,4 @@
-package com.toki.tokiapp.adslibrary
+package com.toki.tokiapp.test
 
 import android.os.Bundle
 import android.widget.FrameLayout
@@ -31,7 +31,7 @@ class SecondActivity : AppCompatActivity() {
                
             }
         })
-        AdmobUtil.showNativeAd(this,AdsManager.nativeHolder,findViewById<FrameLayout>(R.id.fl_native),R.layout.ad_template_medium,GoogleENative.UNIFIED_MEDIUM,object : NativeAdCallback{
+        AdmobUtil.loadAndShowNative(this, "ca-app-pub-3940256099942544/2247696110",findViewById<FrameLayout>(R.id.fl_native),R.layout.ad_template_medium,GoogleENative.UNIFIED_MEDIUM,object : NativeAdCallback{
             override fun onNativeAdLoaded() {
 
             }
@@ -44,8 +44,22 @@ class SecondActivity : AppCompatActivity() {
 
             }
         })
+
+//        AdmobUtil.showNativeAd(this,AdsManager.nativeHolder,findViewById<FrameLayout>(R.id.fl_native),R.layout.ad_template_medium,GoogleENative.UNIFIED_MEDIUM,object : NativeAdCallback{
+//            override fun onNativeAdLoaded() {
+//
+//            }
+//
+//            override fun onAdFail() {
+//
+//            }
+//
+//            override fun onAdPaid(adValue: AdValue?) {
+//
+//            }
+//        })
         findViewById<AppCompatButton>(R.id.tv_show_inter).setOnClickListener {
-            AdsManager.showAdInter(this,AdsManager.interholder,object : AdsManager.AdListener{
+            AdsManager.showAdInter(this, AdsManager.interholder, object : AdsManager.AdListener {
                 override fun onAdClosed() {
 
                 }
