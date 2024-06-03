@@ -487,6 +487,7 @@ object AdmobUtil {
 
     fun loadAndShowNative(activity: Activity, nativeId: String, viewGroup: ViewGroup, layout: Int, size: GoogleENative, nativeAdCallback: NativeAdCallback){
         if (!isShowAds || !isNetworkConnected(activity)) {
+            nativeAdCallback.onAdFail()
             return
         }
         var idNative = nativeId
@@ -516,6 +517,7 @@ object AdmobUtil {
         }.withAdListener(object : AdListener() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 super.onAdFailedToLoad(adError)
+                nativeAdCallback.onAdFail()
             }
         }).withNativeAdOptions(NativeAdOptions.Builder().build()).build()
         if (adRequest != null) {
