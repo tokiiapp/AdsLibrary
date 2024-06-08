@@ -31,7 +31,7 @@ class SecondActivity : AppCompatActivity() {
                
             }
         })
-        AdmobUtil.loadAndShowNative(this, "ca-app-pub-3940256099942544/2247696110",findViewById<FrameLayout>(R.id.fl_native),R.layout.ad_template_medium,GoogleENative.UNIFIED_MEDIUM,object : NativeAdCallback{
+        AdmobUtil.loadAndShowNative(this, "ca-app-pub-3940256099942544/2247696110",findViewById<FrameLayout>(R.id.fl_native),R.layout.ad_template_small,GoogleENative.UNIFIED_SMALL,object : NativeAdCallback{
             override fun onNativeAdLoaded() {
 
             }

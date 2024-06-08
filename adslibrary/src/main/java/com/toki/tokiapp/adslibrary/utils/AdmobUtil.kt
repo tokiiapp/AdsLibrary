@@ -507,7 +507,7 @@ object AdmobUtil {
             val adView = activity.layoutInflater
                 .inflate(layout, null) as NativeAdView
 
-            NativeAdPopulate.populateNativeAdView(it, adView, GoogleENative.UNIFIED_MEDIUM)
+            NativeAdPopulate.populateNativeAdView(it, adView, size)
             if (shimmerFrameLayout != null) {
                 shimmerFrameLayout!!.stopShimmer()
             }
