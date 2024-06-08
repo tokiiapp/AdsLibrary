@@ -442,7 +442,7 @@ object AdmobUtil {
                 val adView = activity.layoutInflater
                     .inflate(layout, null) as NativeAdView
 
-                NativeAdPopulate.populateNativeAdView(nativeHolder.nativeAd!!, adView, GoogleENative.UNIFIED_MEDIUM)
+                NativeAdPopulate.populateNativeAdView(nativeHolder.nativeAd!!, adView, size)
 
                 nativeHolder.native_mutable.removeObservers((activity as LifecycleOwner))
                 viewGroup.addView(adView)
@@ -466,7 +466,7 @@ object AdmobUtil {
                 if (it != null) {
                     val adView = activity.layoutInflater
                         .inflate(layout, null) as NativeAdView
-                    NativeAdPopulate.populateNativeAdView(it, adView, GoogleENative.UNIFIED_MEDIUM)
+                    NativeAdPopulate.populateNativeAdView(it, adView, size)
                     if (shimmerFrameLayout != null) {
                         shimmerFrameLayout!!.stopShimmer()
                     }
