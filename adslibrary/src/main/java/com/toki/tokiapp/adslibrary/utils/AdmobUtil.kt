@@ -20,7 +20,17 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.ads.mediation.admob.AdMobAdapter
-import com.google.android.gms.ads.*
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdValue
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.OnPaidEventListener
 import com.google.android.gms.ads.appopen.AppOpenAd
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
@@ -35,8 +45,9 @@ import com.toki.tokiapp.adslibrary.ads.callback.NativeAdCallback
 import com.toki.tokiapp.adslibrary.ads.enumads.GoogleENative
 import com.toki.tokiapp.adslibrary.ads.model.InterHolderMulti
 import com.toki.tokiapp.adslibrary.ads.model.InterHolderSimple
-import com.vapp.admoblibrary.ads.admobnative.enumclass.CollapsibleBanner
 import com.toki.tokiapp.adslibrary.ads.model.NativeHolder
+import com.vapp.admoblibrary.ads.admobnative.enumclass.CollapsibleBanner
+import java.util.Date
 
 object AdmobUtil {
     //Ẩn hiện quảng cáo
@@ -117,7 +128,7 @@ object AdmobUtil {
                         override fun onAdDismissedFullScreenContent() {
                             super.onAdDismissedFullScreenContent()
                             isAdShowing = false
-
+                            lastTimeShowInterstitial = Date().time
                             adsInterCallBack.onEventClickAdClosed()
                             dismissAdDialog()
                         }
@@ -278,6 +289,7 @@ object AdmobUtil {
                     it.fullScreenContentCallback = object : FullScreenContentCallback() {
                         override fun onAdDismissedFullScreenContent() {
                             super.onAdDismissedFullScreenContent()
+                            lastTimeShowInterstitial = Date().time
                             isAdShowing = false
                             interHolder.mutableLiveData.removeObservers(activity as LifecycleOwner)
                             interHolder.inter = null

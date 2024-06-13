@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import com.codemybrainsout.ratingdialog.RatingDialog
 import com.google.android.gms.ads.AdValue
 import com.google.android.gms.ads.AdView
+import com.toki.tokiapp.adslibrary.ads.callback.AdsInterCallBack
 import com.toki.tokiapp.adslibrary.ads.callback.BannerCallBack
 import com.toki.tokiapp.adslibrary.ads.callback.NativeAdCallback
 import com.toki.tokiapp.adslibrary.ads.enumads.GoogleENative
@@ -90,6 +91,34 @@ class SecondActivity : AppCompatActivity() {
             ratingDialog.setCanceledOnTouchOutside(false)
             //show
             ratingDialog.show()
+        }
+    }
+
+    override fun onBackPressed() {
+        if (System.currentTimeMillis() - AdmobUtil.lastTimeShowInterstitial > 30000){
+            AdmobUtil.loadAndShowAdInterstitial(this,"",object : AdsInterCallBack{
+                override fun onStartAction() {
+                    
+                }
+
+                override fun onEventClickAdClosed() {
+                    finish()
+                }
+
+                override fun onAdShowed() {
+                }
+
+                override fun onAdLoaded() {
+                }
+
+                override fun onAdFail(error: String?) {
+                }
+
+                override fun onPaid(adValue: AdValue?) {
+                }
+            },true)
+        }else{
+            super.onBackPressed()
         }
     }
 }

@@ -3,6 +3,7 @@ package com.toki.tokiapp.test
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.TextView
 import com.google.android.gms.ads.AdValue
 import com.toki.tokiapp.adslibrary.ads.callback.AdsInterCallBack
 import com.toki.tokiapp.adslibrary.ads.callback.AppOpenSplashCallback
@@ -28,5 +29,8 @@ class MainActivity : AppCompatActivity() {
                startActivity(Intent(this@MainActivity, SecondActivity::class.java))
             }
         })
+        findViewById<TextView>(R.id.tv_main).setOnClickListener {
+            startActivity(Intent(this,SecondActivity::class.java))
+        }
     }
 }
