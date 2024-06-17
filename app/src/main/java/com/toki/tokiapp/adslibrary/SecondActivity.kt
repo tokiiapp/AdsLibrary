@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import com.codemybrainsout.ratingdialog.RatingDialog
 import com.google.android.gms.ads.AdValue
 import com.google.android.gms.ads.AdView
+import com.toki.tokiapp.adslibrary.ads.callback.AdsInterCallBack
 import com.toki.tokiapp.adslibrary.ads.callback.BannerCallBack
 import com.toki.tokiapp.adslibrary.ads.callback.NativeAdCallback
 import com.toki.tokiapp.adslibrary.ads.enumads.GoogleENative
@@ -31,7 +32,20 @@ class SecondActivity : AppCompatActivity() {
                
             }
         })
-        AdmobUtil.showNativeAd(this,AdsManager.nativeHolder,findViewById<FrameLayout>(R.id.fl_native),R.layout.ad_template_medium,GoogleENative.UNIFIED_MEDIUM,object : NativeAdCallback{
+//        AdmobUtil.showNativeAd(this,AdsManager.nativeHolder,findViewById<FrameLayout>(R.id.fl_native),R.layout.ad_template_medium,GoogleENative.UNIFIED_MEDIUM,object : NativeAdCallback{
+//            override fun onNativeAdLoaded() {
+//
+//            }
+//
+//            override fun onAdFail() {
+//
+//            }
+//
+//            override fun onAdPaid(adValue: AdValue?) {
+//
+//            }
+//        })
+        AdmobUtil.loadAndShowNative(this, "ca-app-pub-3940256099942544/2247696110",findViewById<FrameLayout>(R.id.fl_native), com.toki.tokiapp.adslibrary.R.layout.ad_template_medium,GoogleENative.UNIFIED_MEDIUM,object : NativeAdCallback{
             override fun onNativeAdLoaded() {
 
             }
@@ -76,6 +90,34 @@ class SecondActivity : AppCompatActivity() {
             ratingDialog.setCanceledOnTouchOutside(false)
             //show
             ratingDialog.show()
+        }
+    }
+
+    override fun onBackPressed() {
+        if (System.currentTimeMillis() - AdmobUtil.lastTimeShowInterstitial > 30000){
+            AdmobUtil.loadAndShowAdInterstitial(this,"",object : AdsInterCallBack {
+                override fun onStartAction() {
+
+                }
+
+                override fun onEventClickAdClosed() {
+                    finish()
+                }
+
+                override fun onAdShowed() {
+                }
+
+                override fun onAdLoaded() {
+                }
+
+                override fun onAdFail(error: String?) {
+                }
+
+                override fun onPaid(adValue: AdValue?) {
+                }
+            },true)
+        }else{
+            super.onBackPressed()
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.vapp.admoblibrary.ads.admobnative.enumclass
+package com.toki.tokiapp.adslibrary.ads.enumads
 
 enum class CollapsibleBanner {
     TOP, //320x50

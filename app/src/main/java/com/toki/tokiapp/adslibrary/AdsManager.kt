@@ -2,16 +2,12 @@ package com.toki.tokiapp.adslibrary
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.ads.AdValue
-import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.toki.tokiapp.adslibrary.ads.callback.AdsInterCallBack
 import com.toki.tokiapp.adslibrary.ads.callback.LoadInterCallBack
 import com.toki.tokiapp.adslibrary.ads.model.InterHolderSimple
 import com.toki.tokiapp.adslibrary.utils.AdmobUtil
-import com.vapp.admoblibrary.ads.model.NativeHolder
+import com.toki.tokiapp.adslibrary.ads.model.NativeHolder
 
 
 object AdsManager {
