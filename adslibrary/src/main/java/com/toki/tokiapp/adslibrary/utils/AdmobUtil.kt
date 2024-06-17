@@ -46,7 +46,7 @@ import com.toki.tokiapp.adslibrary.ads.enumads.GoogleENative
 import com.toki.tokiapp.adslibrary.ads.model.InterHolderMulti
 import com.toki.tokiapp.adslibrary.ads.model.InterHolderSimple
 import com.toki.tokiapp.adslibrary.ads.model.NativeHolder
-import com.vapp.admoblibrary.ads.admobnative.enumclass.CollapsibleBanner
+import com.toki.tokiapp.adslibrary.ads.enumads.CollapsibleBanner
 import java.util.Date
 
 object AdmobUtil {
