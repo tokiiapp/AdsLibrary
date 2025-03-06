@@ -36,12 +36,15 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.google.android.gms.ads.nativead.NativeAdView
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.toki.tokiapp.adslibrary.R
 import com.toki.tokiapp.adslibrary.ads.callback.AdsInterCallBack
 import com.toki.tokiapp.adslibrary.ads.callback.AppOpenSplashCallback
 import com.toki.tokiapp.adslibrary.ads.callback.BannerCallBack
 import com.toki.tokiapp.adslibrary.ads.callback.LoadInterCallBack
 import com.toki.tokiapp.adslibrary.ads.callback.NativeAdCallback
+import com.toki.tokiapp.adslibrary.ads.callback.RewardAdCallback
 import com.toki.tokiapp.adslibrary.ads.enumads.GoogleENative
 import com.toki.tokiapp.adslibrary.ads.model.InterHolderMulti
 import com.toki.tokiapp.adslibrary.ads.model.InterHolderSimple
@@ -67,6 +70,7 @@ object AdmobUtil {
     var isAdShowing = false
     var isClick = false
     var dialogFullScreen: Dialog? = null
+    var mRewardedAd: RewardedAd? = null
 
     var shimmerFrameLayout: ShimmerFrameLayout? = null
 
@@ -738,5 +742,112 @@ object AdmobUtil {
             LinearLayout.LayoutParams.MATCH_PARENT
         )
         dialogFullScreen?.show()
+    }
+
+    @JvmStatic
+    fun loadAndShowAdRewardWithCallback(
+        activity: Activity,
+        admobId: String?,
+        adCallback2: RewardAdCallback,
+        enableLoadingDialog: Boolean
+    ) {
+        var admobId = admobId
+        isAdShowing = false
+        if (!isShowAds || !isNetworkConnected(activity)) {
+            adCallback2.onAdClosed()
+            return
+        }
+        if (adRequest == null) {
+            initAdRequest(timeOut)
+        }
+        if (isTesting) {
+            admobId = activity.getString(R.string.test_ads_admob_reward_id)
+        }
+        if (enableLoadingDialog) {
+            dialogLoading(activity)
+        }
+        isAdShowing = false
+        if (AppOpenManager.instance?.isInitialized == true) {
+            AppOpenManager.instance?.isAppResumeEnabled = false
+        }
+        RewardedAd.load(activity, admobId!!,
+            adRequest!!, object : RewardedAdLoadCallback() {
+                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                    // Handle the error.
+                    mRewardedAd = null
+                    adCallback2.onAdFail(loadAdError.message)
+                    dismissAdDialog()
+                    if (AppOpenManager.instance?.isInitialized == true) {
+                        AppOpenManager.instance?.isAppResumeEnabled = true
+                    }
+                    isAdShowing = false
+                    Log.e("Admodfail", "onAdFailedToLoad" + loadAdError.message)
+                    Log.e("Admodfail", "errorCodeAds" + loadAdError.cause)
+                }
+
+                override fun onAdLoaded(rewardedAd: RewardedAd) {
+                    mRewardedAd = rewardedAd
+                    if (mRewardedAd != null) {
+                        mRewardedAd?.setOnPaidEventListener { adCallback2.onPaid(it, mRewardedAd?.adUnitId) }
+                        mRewardedAd?.fullScreenContentCallback =
+                            object : FullScreenContentCallback() {
+                                override fun onAdShowedFullScreenContent() {
+                                    isAdShowing = true
+                                    adCallback2.onAdShowed()
+                                    if (AppOpenManager.instance?.isInitialized == true) {
+                                        AppOpenManager.instance?.isAppResumeEnabled = false
+                                    }
+                                }
+
+                                override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                                    // Called when ad fails to show.
+                                    if (adError.code != 1) {
+                                        isAdShowing = false
+                                        adCallback2.onAdFail(adError.message)
+                                        mRewardedAd = null
+                                        dismissAdDialog()
+                                    }
+                                    if (AppOpenManager.instance?.isInitialized == true) {
+                                        AppOpenManager.instance?.isAppResumeEnabled = true
+                                    }
+                                    Log.e("Admodfail", "onAdFailedToLoad" + adError.message)
+                                    Log.e("Admodfail", "errorCodeAds" + adError.cause)
+                                }
+
+                                override fun onAdDismissedFullScreenContent() {
+                                    // Called when ad is dismissed.
+                                    // Set the ad reference to null so you don't show the ad a second time.
+                                    mRewardedAd = null
+                                    isAdShowing = false
+                                    adCallback2.onAdClosed()
+                                    if (AppOpenManager.instance?.isInitialized == true) {
+                                        AppOpenManager.instance?.isAppResumeEnabled = true
+                                    }
+                                }
+                            }
+                        if (ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                            if (AppOpenManager.instance?.isInitialized == true) {
+                                AppOpenManager.instance?.isAppResumeEnabled = false
+                            }
+                            mRewardedAd?.show(activity) { adCallback2.onEarned() }
+                            isAdShowing = true
+                        } else {
+                            mRewardedAd = null
+                            dismissAdDialog()
+                            isAdShowing = false
+                            if (AppOpenManager.instance?.isInitialized == true) {
+                                AppOpenManager.instance?.isAppResumeEnabled = true
+                            }
+                        }
+                    } else {
+                        isAdShowing = false
+                        adCallback2.onAdFail("None Show")
+                        dismissAdDialog()
+                        if (AppOpenManager.instance?.isInitialized == true) {
+                            AppOpenManager.instance?.isAppResumeEnabled = true
+                        }
+                    }
+                }
+            })
     }
 }
