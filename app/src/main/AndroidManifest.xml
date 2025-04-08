@@ -13,15 +13,17 @@
         android:theme="@style/Theme.AdsLibrary"
         tools:targetApi="31">
         <activity
-            android:name="com.toki.tokiapp.test.SecondActivity"
+            android:name=".NativeFullScreenActivity"
             android:exported="false" />
-        <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
+        <activity
+            android:name=".SecondActivity"
+            android:exported="false" /> <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713" />
 
         <activity
-            android:name="com.toki.tokiapp.test.MainActivity"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

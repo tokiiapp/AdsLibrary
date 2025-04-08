@@ -6,6 +6,8 @@ import android.os.Handler
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.ads.AdValue
+import com.google.android.gms.ads.MediaAspectRatio
+import com.toki.tokiapp.adslibrary.ads.callback.NativeAdCallback
 import com.toki.tokiapp.adslibrary.ads.callback.RewardAdCallback
 import com.toki.tokiapp.adslibrary.utils.AdmobUtil
 import com.toki.tokiapp.adslibrary.utils.AppOpenManager
@@ -18,7 +20,20 @@ class MainActivity : AppCompatActivity() {
         AppOpenManager.instance?.init(application,"ca-app-pub-3940256099942544/3419835294")
 //        AppOpenManager.instance?.disableAppResumeWithActivity(MainActivity::class.java)
         AdsManager.loadInter(this, AdsManager.interholder)
-        AdmobUtil.loadNativeAd(this, AdsManager.nativeHolder)
+        AdmobUtil.loadNativeFullScreen(this, AdsManager.nativeHolder,MediaAspectRatio.SQUARE,object : NativeAdCallback{
+            override fun onNativeAdLoaded() {
+
+            }
+
+            override fun onAdFail() {
+
+            }
+
+            override fun onAdPaid(adValue: AdValue?) {
+
+            }
+
+        })
 //        AdmobUtil.loadAndShowAppOpenSplash(this,"",object : AppOpenSplashCallback{
 //            override fun onAdFail(error: String) {
 //                onAdClosed()

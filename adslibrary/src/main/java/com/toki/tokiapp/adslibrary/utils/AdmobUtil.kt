@@ -31,9 +31,11 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.OnPaidEventListener
+import com.google.android.gms.ads.VideoOptions
 import com.google.android.gms.ads.appopen.AppOpenAd
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.google.android.gms.ads.nativead.NativeAdView
 import com.google.android.gms.ads.rewarded.RewardedAd
@@ -50,6 +52,7 @@ import com.toki.tokiapp.adslibrary.ads.model.InterHolderMulti
 import com.toki.tokiapp.adslibrary.ads.model.InterHolderSimple
 import com.toki.tokiapp.adslibrary.ads.model.NativeHolder
 import com.toki.tokiapp.adslibrary.ads.enumads.CollapsibleBanner
+import com.toki.tokiapp.adslibrary.utils.NativeAdPopulate.populateNativeAdView
 import java.util.Date
 
 object AdmobUtil {
@@ -538,6 +541,150 @@ object AdmobUtil {
         }).withNativeAdOptions(NativeAdOptions.Builder().build()).build()
         if (adRequest != null) {
             adLoader.loadAd(adRequest!!)
+        }
+    }
+
+    @JvmStatic
+    fun loadNativeFullScreen(
+        context: Context,
+        nativeHolder: NativeHolder, mediaAspectRatio: Int,
+        adCallback: NativeAdCallback
+    ) {
+        if (!isShowAds || !isNetworkConnected(
+                context
+            )
+        ) {
+            adCallback.onAdFail()
+            return
+        }
+        //If native is loaded return
+        if (nativeHolder.nativeAd != null) {
+            Log.d("===AdsLoadsNative", "Native not null")
+            return
+        }
+        if (isTesting) {
+            nativeHolder.adId = context.getString(R.string.test_ads_admob_native_full_screen_id)
+        }
+        nativeHolder.isLoaded = true
+        val videoOptions =
+            VideoOptions.Builder().setStartMuted(false).setCustomControlsRequested(true).build()
+        val adOptions = NativeAdOptions.Builder()
+            .setMediaAspectRatio(mediaAspectRatio)
+            .setVideoOptions(videoOptions)
+            .build()
+        val adLoader = AdLoader.Builder(context, nativeHolder.adId)
+        adLoader.withNativeAdOptions(adOptions)
+        adLoader.forNativeAd { nativeAd ->
+            nativeHolder.nativeAd = nativeAd
+            nativeHolder.isLoaded = false
+            nativeHolder.native_mutable.value = nativeAd
+            nativeAd.setOnPaidEventListener { adValue: AdValue? ->
+                adValue?.let {
+
+                }
+            }
+            adCallback.onNativeAdLoaded()
+        }
+        adLoader.withAdListener(object : AdListener() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                Log.e("Admodfail", "onAdFailedToLoad" + adError.message)
+                Log.e("Admodfail", "errorCodeAds" + adError.cause)
+                nativeHolder.nativeAd = null
+                nativeHolder.isLoaded = false
+                nativeHolder.native_mutable.value = null
+                adCallback.onAdFail()
+            }
+
+            override fun onAdClicked() {
+                super.onAdClicked()
+
+            }
+        })
+        if (adRequest != null) {
+            adLoader.build().loadAd(adRequest!!)
+        }
+    }
+
+    @JvmStatic
+    fun showNativeFullScreen(
+        activity: Activity,
+        nativeHolder: NativeHolder,
+        viewGroup: ViewGroup,
+        layout: Int,
+        callback: NativeAdCallback
+    ) {
+        if (!isShowAds || !isNetworkConnected(
+                activity
+            )
+        ) {
+            viewGroup.visibility = View.GONE
+            return
+        }
+        if (shimmerFrameLayout != null) {
+            shimmerFrameLayout?.stopShimmer()
+        }
+        viewGroup.removeAllViews()
+        if (!nativeHolder.isLoaded) {
+            if (nativeHolder.nativeAd != null) {
+                val adView = activity.layoutInflater.inflate(layout, null) as NativeAdView
+                populateNativeAdView(
+                    nativeHolder.nativeAd!!,
+                    adView
+                )
+                shimmerFrameLayout?.stopShimmer()
+                if (shimmerFrameLayout != null) {
+                    shimmerFrameLayout?.stopShimmer()
+                }
+                nativeHolder.native_mutable.removeObservers((activity as LifecycleOwner))
+                viewGroup.removeAllViews()
+                viewGroup.addView(adView)
+                callback.onNativeAdLoaded()
+            } else {
+                if (shimmerFrameLayout != null) {
+                    shimmerFrameLayout?.stopShimmer()
+                }
+                nativeHolder.native_mutable.removeObservers((activity as LifecycleOwner))
+                callback.onAdFail()
+            }
+        } else {
+            val tagView = activity.layoutInflater.inflate(
+                R.layout.layoutnative_loading_fullscreen,
+                null,
+                false
+            )
+            viewGroup.addView(tagView, 0)
+
+            if (shimmerFrameLayout == null) shimmerFrameLayout =
+                tagView.findViewById(R.id.shimmer_view_container)
+            shimmerFrameLayout?.startShimmer()
+            nativeHolder.native_mutable.observe((activity as LifecycleOwner)) { nativeAd: NativeAd? ->
+                if (nativeAd != null) {
+                    nativeAd.setOnPaidEventListener {
+
+                    }
+
+                    val adView = activity.layoutInflater.inflate(layout, null) as NativeAdView
+                    populateNativeAdView(
+                        nativeHolder.nativeAd!!,
+                        adView
+                    )
+                    if (shimmerFrameLayout != null) {
+                        shimmerFrameLayout?.stopShimmer()
+                    }
+
+                    viewGroup.removeAllViews()
+                    viewGroup.addView(adView)
+
+                    callback.onNativeAdLoaded()
+                    nativeHolder.native_mutable.removeObservers((activity as LifecycleOwner))
+                } else {
+                    if (shimmerFrameLayout != null) {
+                        shimmerFrameLayout?.stopShimmer()
+                    }
+                    callback.onAdFail()
+                    nativeHolder.native_mutable.removeObservers((activity as LifecycleOwner))
+                }
+            }
         }
     }
 

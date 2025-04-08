@@ -1,5 +1,6 @@
 package com.toki.tokiapp.test
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.FrameLayout
 import android.widget.Toast
@@ -32,19 +33,21 @@ class SecondActivity : AppCompatActivity() {
                
             }
         })
-        AdmobUtil.loadAndShowNative(this, "ca-app-pub-3940256099942544/2247696110",findViewById<FrameLayout>(R.id.fl_native),R.layout.ad_template_small,GoogleENative.UNIFIED_SMALL,object : NativeAdCallback{
-            override fun onNativeAdLoaded() {
+//        AdmobUtil.loadAndShowNative(this, "ca-app-pub-3940256099942544/2247696110",findViewById<FrameLayout>(R.id.fl_native),R.layout.ad_template_small,GoogleENative.UNIFIED_SMALL,object : NativeAdCallback{
+//            override fun onNativeAdLoaded() {
+//
+//            }
+//
+//            override fun onAdFail() {
+//
+//            }
+//
+//            override fun onAdPaid(adValue: AdValue?) {
+//
+//            }
+//        })
 
-            }
 
-            override fun onAdFail() {
-
-            }
-
-            override fun onAdPaid(adValue: AdValue?) {
-
-            }
-        })
 
 //        AdmobUtil.showNativeAd(this,AdsManager.nativeHolder,findViewById<FrameLayout>(R.id.fl_native),R.layout.ad_template_medium,GoogleENative.UNIFIED_MEDIUM,object : NativeAdCallback{
 //            override fun onNativeAdLoaded() {
@@ -59,6 +62,9 @@ class SecondActivity : AppCompatActivity() {
 //
 //            }
 //        })
+        findViewById<AppCompatButton>(R.id.tv_show_native_full_screen).setOnClickListener {
+            startActivity(Intent(this, NativeFullScreenActivity::class.java))
+        }
         findViewById<AppCompatButton>(R.id.tv_show_inter).setOnClickListener {
             AdsManager.showAdInter(this, AdsManager.interholder, object : AdsManager.AdListener {
                 override fun onAdClosed() {
